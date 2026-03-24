@@ -1,1 +1,6 @@
-1x/
+# Ignore Java compiled files
+target/
+*.class
+
+# Ignore Node.js modules
+node_modules/
