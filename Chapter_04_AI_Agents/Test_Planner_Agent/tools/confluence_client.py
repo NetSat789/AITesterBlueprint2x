@@ -3,8 +3,8 @@ import json
 import markdown
 
 class ConfluenceClient:
-    def __init__(self, url, email, api_token):
-        self.url = url.rstrip('/') if url.startswith('http') else 'https://' + url.rstrip('/')
+    def __init__(self, confluence_url, email, api_token):
+        self.url = confluence_url.rstrip('/') if confluence_url.startswith('http') else 'https://' + confluence_url.rstrip('/')
         self.email = email
         self.api_token = api_token
 
@@ -12,13 +12,7 @@ class ConfluenceClient:
         """
         Publishes Markdown content as a new Confluence page.
         """
-        # Determine base URL for confluence (Jira cloud standardizes on /wiki)
-        if "atlassian.net" in self.url and not self.url.endswith("/wiki"):
-            base = f"{self.url}/wiki"
-        else:
-            base = self.url
-            
-        endpoint = f"{base}/rest/api/content"
+        endpoint = f"{self.url}/rest/api/content"
         
         # Convert Markdown to HTML for Confluence storage format
         try:
@@ -57,12 +51,14 @@ class ConfluenceClient:
                 return {
                     "error": False, 
                     "message": "Successfully published to Confluence!", 
-                    "url": f"{base}/spaces/{space_key}/pages/{page_id}"
+                    "url": f"{self.url}/spaces/{space_key}/pages/{page_id}"
                 }
             else:
                 err_msg = response.text
                 if "A page with this title already exists" in err_msg:
                     err_msg = "A page with this title already exists in that space."
+                if "<html" in err_msg.lower():
+                    err_msg = "Received HTML error page instead of JSON. Your Confluence URL might be incorrect or you lack permissions."
                 return {"error": True, "message": f"Confluence Error {response.status_code}: {err_msg}"}
         except Exception as e:
             return {"error": True, "message": f"Exception occurred: {str(e)}"}

@@ -4,15 +4,29 @@ import './App.css'
 function App() {
   const [theme, setTheme] = useState('dark')
   const [step, setStep] = useState(1)
+  const [activeTab, setActiveTab] = useState('dashboard')
   
-  // Form states
-  const [llm, setLlm] = useState({ provider: 'Ollama', url: 'http://localhost:11434', key: '', model: 'llama3' })
-  const [jira, setJira] = useState({ url: 'https://yourcompany.atlassian.net', email: '', token: '' })
+  // Form states with LocalStorage persistence
+  const [llm, setLlm] = useState(() => {
+    const saved = localStorage.getItem('blast_llm');
+    return saved ? JSON.parse(saved) : { provider: 'Ollama', url: 'http://localhost:11434', key: '', model: 'llama3' }
+  })
+  const [jira, setJira] = useState(() => {
+    const saved = localStorage.getItem('blast_jira');
+    return saved ? JSON.parse(saved) : { url: 'https://yourcompany.atlassian.net', email: '', token: '' }
+  })
+  const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('blast_history') || '[]'))
+
+  useEffect(() => localStorage.setItem('blast_llm', JSON.stringify(llm)), [llm])
+  useEffect(() => localStorage.setItem('blast_jira', JSON.stringify(jira)), [jira])
+  useEffect(() => localStorage.setItem('blast_history', JSON.stringify(history)), [history])
+
   const [ticketId, setTicketId] = useState('')
   const [context, setContext] = useState('')
   const [ticketData, setTicketData] = useState(null)
   
   // Confluence states
+  const [confluenceUrl, setConfluenceUrl] = useState('')
   const [spaceKey, setSpaceKey] = useState('QA')
   const [pageTitle, setPageTitle] = useState('')
   
@@ -104,6 +118,8 @@ function App() {
         setStatus({ type: 'success', text: 'Plan generated successfully! ' + data.file_path })
         setGeneratedMarkdown(data.markdown)
         setPageTitle(`${ticketId} - Test Plan`)
+        setConfluenceUrl(jira.url.includes('atlassian.net') && !jira.url.includes('/wiki') ? `${jira.url}/wiki` : jira.url)
+        setHistory([{ id: ticketId, date: new Date().toLocaleString(), markdown: data.markdown }, ...history].slice(0, 20))
         setStep(4)
       }
       else {
@@ -126,6 +142,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jira,
+          confluence_url: confluenceUrl,
           space_key: spaceKey,
           title: pageTitle,
           markdown_content: generatedMarkdown
@@ -152,9 +169,8 @@ function App() {
         </div>
         <nav className="sidebar-nav">
           <ul>
-            <li className="active">📊 Dashboard</li>
-            <li>⚙️ Settings</li>
-            <li>🕒 History</li>
+            <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>📊 Dashboard</li>
+            <li className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}>🕒 History</li>
           </ul>
         </nav>
         <div className="sidebar-footer">
@@ -167,18 +183,20 @@ function App() {
       {/* Main Dashboard Panel */}
       <main className="dashboard">
         <header className="dashboard-header">
-          <h1>Test Planner Dashboard</h1>
-          <p>Guided step-by-step workflow for generating test plans</p>
+          <h1>{activeTab === 'dashboard' ? 'Test Planner Dashboard' : 'Plan History'}</h1>
+          <p>{activeTab === 'dashboard' ? 'Guided step-by-step workflow for generating test plans' : 'Previously generated and saved test plans'}</p>
         </header>
 
         <div className="dashboard-content">
-          {status.text && (
-             <div className={`status-banner ${status.type}`}>
-               {status.text}
-             </div>
-          )}
+          {activeTab === 'dashboard' ? (
+            <>
+              {status.text && (
+                 <div className={`status-banner ${status.type}`}>
+                   {status.text}
+                 </div>
+              )}
 
-          <div className="stepper">
+              <div className="stepper">
             {/* Step 1: LLM */}
             <div className={`step-card ${step === 1 ? 'active' : step > 1 ? 'completed' : 'disabled'}`}>
               <div className="step-header" onClick={() => step > 1 && setStep(1)}>
@@ -292,6 +310,10 @@ function App() {
                   
                   <div className="publish-box" style={{marginTop: '1.5rem', padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-color)'}}>
                     <h3 style={{marginBottom: '1rem', fontSize: '1.1rem', color: 'var(--text-main)'}}>☁️ Publish to Confluence</h3>
+                    <div className="form-group">
+                      <label>Confluence Base URL</label>
+                      <input type="text" value={confluenceUrl} onChange={e => setConfluenceUrl(e.target.value)} placeholder="e.g. https://yourcompany.atlassian.net/wiki" />
+                    </div>
                     <div className="form-row">
                       <div className="form-group flex-1">
                         <label>Space Key</label>
@@ -321,6 +343,21 @@ function App() {
             </div>
             
           </div>
+          </>
+          ) : (
+            <div className="stepper">
+               {history.length === 0 ? <p style={{color: 'var(--text-muted)'}}>No test plans generated yet.</p> : history.map((item, idx) => (
+                 <div key={idx} className="step-card active">
+                    <div className="step-header">
+                       <h2>{item.id} - {item.date}</h2>
+                    </div>
+                    <div className="step-body">
+                       <pre className="markdown-output" style={{maxHeight: '200px', overflowY: 'auto'}}>{item.markdown}</pre>
+                    </div>
+                 </div>
+               ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

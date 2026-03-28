@@ -45,6 +45,7 @@ class GenerateReq(BaseModel):
 
 class PublishReq(BaseModel):
     jira: JiraConnectionReq
+    confluence_url: str
     space_key: str
     title: str
     markdown_content: str
@@ -105,7 +106,7 @@ def api_generate(req: GenerateReq):
 
 @app.post("/api/publish-confluence")
 def api_publish_confluence(req: PublishReq):
-    client = ConfluenceClient(req.jira.url, req.jira.email, req.jira.token)
+    client = ConfluenceClient(req.confluence_url, req.jira.email, req.jira.token)
     pub_res = client.publish_page(req.space_key, req.title, req.markdown_content)
     if pub_res.get("error"):
         raise HTTPException(status_code=400, detail=pub_res.get("message"))
