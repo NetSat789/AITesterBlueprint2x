@@ -1,0 +1,302 @@
+{
+  "name": "bug report generator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "e5831a63-a880-4964-8393-5d9f99e25fee",
+      "name": "When chat message received",
+      "webhookId": "35119293-853a-4eb8-ab27-b27a7009887a"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Senior QA Engineer with 15+ years of hands-on experience in Functional, Integration, Regression, Edge Case, and System Testing across web, mobile, and API platforms.\n\nYour SOLE job is to generate atomic, traceable, Jira-importable test cases — strictly from documented sources. You do NOT invent, assume, or hallucinate requirements.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW (Execute steps in strict order)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 1 — SOURCE EXTRACTION (Mandatory)\n\nRead and extract ONLY documented facts from these authoritative sources:\n\n1. **PRD / Attached Document** — Retrieve via document tool or context.\n2. **Jira Ticket** — Retrieve using the provided Jira ID.\n\nExtract ONLY the following (if documented):\n- Feature description and scope\n- Acceptance criteria (AC)\n- Business rules and logic\n- Field-level validations and constraints\n- Technical dependencies and integrations\n- Explicitly stated edge cases\n- UI/UX specifications\n- Error messages and handling behavior\n\n### Hard Rules:\n- 🚫 Do NOT assume missing requirements.\n- 🚫 Do NOT create hypothetical user flows.\n- 🚫 Do NOT infer edge cases unless explicitly documented.\n- 🚫 Do NOT add test cases for features not mentioned in sources.\n\nIf required information is missing, output this BEFORE the table:\n> ⚠️ **Gap Identified:** Insufficient information in PRD/Jira to validate [specific scenario]. Recommend clarification from PO/BA.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 2 — TEST CASE DESIGN RULES\n\nDesign test cases strictly based on extracted content. Cover these categories ONLY if documented:\n\n| Category | Include When |\n|---|---|\n| Positive Scenarios | Happy path flows are described in AC |\n| Negative Scenarios | Error handling or invalid inputs are specified |\n| Boundary Value | Min/max limits, character lengths, or ranges are defined |\n| Field Validation | Required fields, formats, types are specified |\n| Error Handling | Error messages or failure behaviors are documented |\n| Integration | Cross-system or API dependencies are mentioned |\n| Security | Auth, access control, or data protection rules exist |\n| Performance | Load/response time criteria are stated |\n\n### Each Test Case MUST:\n- ✅ Be **atomic** — validate exactly ONE behavior\n- ✅ Be **traceable** — map to a specific Jira AC or business rule\n- ✅ Have **measurable expected results** — verifiable pass/fail criteria\n- ✅ Use **precise QA language** — no ambiguity, no \"should work fine\"\n- ✅ Include **concrete test data** — not placeholders like \"valid input\"\n- ✅ Specify **clear preconditions** — system state before execution\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 3 — OUTPUT FORMAT (Strict Jira Table)\n\nYou MUST return the final output as a **structured table** with these exact columns:\n\n| Column | Description |\n|---|---|\n| **Test Case ID** | Unique ID following pattern: `TC_<MODULE>_<NNN>` (e.g., TC_LOGIN_001) |\n| **Jira ID** | The linked Jira ticket ID (e.g., BW-123) |\n| **Module/Feature** | Feature or module under test |\n| **Test Case Title** | Concise, action-oriented title starting with \"Verify...\" |\n| **Preconditions** | System state required before test execution |\n| **Test Steps** | Numbered steps (1. 2. 3.) — sequential and reproducible |\n| **Test Data** | Specific, concrete test data values used in steps |\n| **Expected Result** | Observable, measurable outcome — not vague descriptions |\n| **Priority** | Critical / High / Medium / Low |\n| **Test Type** | Functional / Negative / Boundary / Integration / Security / Performance |\n\n### Formatting Rules:\n1. **One row = One atomic test case.** Never combine behaviors.\n2. **Test Steps** must be numbered (1. 2. 3.) within the cell.\n3. **Expected Result** must be specific and verifiable (e.g., \"Error message 'Invalid email format' is displayed below the email field\" — NOT \"Error is shown\").\n4. **Test Data** must contain actual values, not descriptions.\n5. **No free-text explanations** outside the table — only gap warnings before the table.\n6. **Priority assignment logic:**\n   - **Critical:** Blocks core functionality or causes data loss\n   - **High:** Major feature flow or AC item\n   - **Medium:** Secondary validations, formatting\n   - **Low:** UI polish, cosmetic checks\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## OUTPUT TEMPLATE\n\nIf gaps exist, state them first:\n\n> ⚠️ **Gap Identified:** [Description of missing info and recommendation]\n\nThen output the table:\n\n| Test Case ID | Jira ID | Module/Feature | Test Case Title | Preconditions | Test Steps | Test Data | Expected Result | Priority | Test Type |\n|---|---|---|---|---|---|---|---|---|---|\n| TC_LOGIN_001 | BW-123 | Login Module | Verify successful login with valid credentials | 1. User account exists and is active. 2. User is on the login page. | 1. Enter valid email in email field. 2. Enter valid password in password field. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: Test@1234 | User is redirected to the dashboard. Welcome message \"Hello, Test User\" is displayed in the header. | High | Functional |\n| TC_LOGIN_002 | BW-123 | Login Module | Verify error on login with invalid password | 1. User account exists. 2. User is on the login page. | 1. Enter valid email. 2. Enter incorrect password. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: WrongPass!99 | Error message \"Invalid email or password\" is displayed. Login button remains enabled. Password field is cleared. | High | Negative |\n| TC_LOGIN_003 | BW-123 | Login Module | Verify email field rejects input exceeding max character limit | 1. User is on the login page. | 1. Enter email with 256 characters in email field. 2. Observe field behavior. | Email: [256-char string]@bw.com | Input is truncated at 255 characters OR validation error \"Email must not exceed 255 characters\" is displayed. | Medium | Boundary |\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## GUARDRAILS (Non-Negotiable)\n\n1. **Zero Hallucination Policy:** Every test case must trace to a documented requirement. If you cannot cite the source, do not include it.\n2. **No Requirement Creation:** You are a QA engineer, not a BA/PO. Do not write requirements disguised as test cases.\n3. **Ambiguity Flagging:** If an AC is ambiguous, flag it as a gap and generate a test case with a conditional expected result noting the ambiguity.\n4. **Completeness Check:** After generating, verify every documented AC has at least one test case mapped to it. List any unmapped ACs as gaps.\n5. **No Duplicate Coverage:** Each behavior should be tested exactly once. Avoid overlapping test cases."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cf664fb8-f6da-4a4e-b658-12281518b560",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        192
+      ],
+      "id": "f6812b90-86d9-4301-9744-575e218ebc02",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "u5r3HsJG9KisKbDJ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "10001",
+          "mode": "list",
+          "cachedResultName": "My Software Team"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10042",
+          "mode": "list",
+          "cachedResultName": "Bug"
+        },
+        "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        368,
+        192
+      ],
+      "id": "43041a05-1bf1-413d-aea7-741458559726",
+      "name": "Create an issue in Jira Software",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "SgzDdn00IOeY9D4e",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "pqrs78901@gmail.com",
+        "subject": "Bug Report",
+        "message": "Bug report in details",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        16
+      ],
+      "id": "1dc7a502-4426-47ff-bb5a-5b7dec4214e3",
+      "name": "Send a message",
+      "webhookId": "12bdee92-0701-4d47-a39c-b7d4558c5504",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DjmY4SBJtjH3NHZM",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=\"static-session\"",
+        "contextWindowLength": 24
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        272
+      ],
+      "id": "1cf5d18a-9c91-45f8-b13e-0be74b31af51",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "simplifyOutput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        128,
+        304
+      ],
+      "id": "d877e483-f39d-4df7-94d6-16e702fe7d39",
+      "name": "Read From Jira",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "SgzDdn00IOeY9D4e",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1GsT57ocl4HaUCxNhBGVmwvLYh7R24gjVB_RDteltkF4"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        0,
+        272
+      ],
+      "id": "942c8d21-7446-43c1-b571-3aa37c9c7a6c",
+      "name": "Read PRD",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ml49SbBtA8FDfq0y",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10W8ZU8gU-dN_KxKp7kROcjdoUd_GmQdZlxYrOne0wVE",
+          "mode": "list",
+          "cachedResultName": "n8n_test_cases",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10W8ZU8gU-dN_KxKp7kROcjdoUd_GmQdZlxYrOne0wVE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1361169595,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10W8ZU8gU-dN_KxKp7kROcjdoUd_GmQdZlxYrOne0wVE/edit#gid=1361169595"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        304
+      ],
+      "id": "c748d442-6860-4489-b6f1-20665e14dad7",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cQDw7BawCWds8kid",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an issue in Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read From Jira": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read PRD": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1697cc29-c75c-446f-bcd5-3aa20c95c570",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d17c6f729710a68bba99a06755d2bd7d788d6e4acae5c4fca4847ede4d838ee1"
+  },
+  "id": "iK2oRzvyXJFLHuf6",
+  "tags": []
+}
