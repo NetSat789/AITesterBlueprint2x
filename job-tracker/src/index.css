@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply h-full antialiased;
+  }
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-200;
+  }
+  body.dark {
+    @apply bg-gray-900 text-gray-50;
+  }
+  #root {
+    @apply h-full flex flex-col;
+  }
+}
+
+/* Custom scrollbar for columns */
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scroll-bar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,5 @@
+{
+  "watch": ["*.ts", "services/*.ts"],
+  "ext": "ts",
+  "ignore": ["config.json", "node_modules", "dist"]
+}

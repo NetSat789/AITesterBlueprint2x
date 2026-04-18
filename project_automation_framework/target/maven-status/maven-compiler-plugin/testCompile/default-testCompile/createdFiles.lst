@@ -1,0 +1,3 @@
+com\automation\tests\DashboardTest.class
+com\automation\tests\InvalidLoginTest.class
+com\automation\tests\LoginTest.class
