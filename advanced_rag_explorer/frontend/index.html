@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Advanced RAG Explorer</title>
+<meta name="description" content="Advanced RAG Explorer — visualise ingestion, chunking, re-ranking and LLM generation step by step."/>
+<link rel="stylesheet" href="/static/styles.css"/>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <span class="logo">🔮</span>
+  <h1>Advanced RAG Explorer</h1>
+  <span class="subtitle">v1.0</span>
+  <div class="spacer"></div>
+  <span class="badge" id="dbBadge">DB: 0 chunks</span>
+  <div class="api-key-wrap">
+    <label for="apiKey">Groq Key</label>
+    <input type="password" id="apiKey" placeholder="gsk_…" autocomplete="off"/>
+  </div>
+</header>
+
+<!-- ══════════════ LAYOUT ══════════════ -->
+<div class="layout">
+
+  <!-- ── LEFT PANEL ── -->
+  <aside class="left-panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="ingest">📂 Ingest</button>
+      <button class="tab-btn" data-tab="chat">💬 Chat</button>
+      <button class="tab-btn" data-tab="db">🗄️ DB</button>
+    </div>
+
+    <!-- INGEST TAB -->
+    <div class="tab-pane active" id="tab-ingest">
+      <div class="upload-zone" id="dropZone">
+        <div class="icon">📄</div>
+        <p>Drop <span>CSV / Excel</span> here<br/>or click to browse</p>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.docx,.pdf,.txt"/>
+      </div>
+      <div id="fileChip" style="display:none" class="file-chip">
+        <span>📎</span>
+        <span class="fname" id="chipName"></span>
+        <span class="fsize" id="chipSize"></span>
+      </div>
+
+      <div class="config-card">
+        <h3>⚙️ Chunk Config</h3>
+        <div class="config-row">
+          <label>Rows per chunk</label>
+          <input type="number" id="cfgChunkSize" value="5" min="1" max="100"/>
+        </div>
+        <div class="config-row">
+          <label>Overlap rows</label>
+          <input type="number" id="cfgOverlap" value="1" min="0" max="50"/>
+        </div>
+        <div class="config-row">
+          <label>Retrieve top-K</label>
+          <input type="number" id="cfgTopK" value="10" min="1" max="50"/>
+        </div>
+        <div class="config-row">
+          <label>Re-rank top-N</label>
+          <input type="number" id="cfgTopN" value="5" min="1" max="20"/>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btnIngest" disabled>
+        <span>⚡</span> Start Ingestion
+      </button>
+      <button class="btn btn-danger" id="btnReset">🗑️ Reset Vector DB</button>
+
+      <div class="stats-card" id="statsCard">
+        <h3>📊 Vector DB Stats</h3>
+        <div class="stat-grid">
+          <div class="stat-item"><span class="stat-value" id="statChunks">0</span><div class="stat-label">Chunks stored</div></div>
+          <div class="stat-item"><span class="stat-value" id="statDims">—</span><div class="stat-label">Embedding dims</div></div>
+          <div class="stat-item"><span class="stat-value" id="statModel">—</span><div class="stat-label" style="font-size:9px">Embed model</div></div>
+          <div class="stat-item"><span class="stat-value" id="statColl">—</span><div class="stat-label" style="font-size:9px">Collection</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT TAB -->
+    <div class="tab-pane" id="tab-chat" style="gap:10px">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-bubble assistant">👋 Hi! Ask me anything about your ingested test cases. I'll show you every RAG step — retrieval, re-ranking, and the final answer.</div>
+      </div>
+      <div class="chat-params">
+        <label>Top-K <input type="number" id="chatTopK" value="10" min="1" max="50"/></label>
+        <label>Re-rank <input type="number" id="chatTopN" value="5" min="1" max="20"/></label>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" placeholder="Ask a question about your test cases…" rows="2"></textarea>
+        <button class="btn btn-primary btn-sm" id="btnSend">➤</button>
+      </div>
+    </div>
+
+    <!-- DB TAB -->
+    <div class="tab-pane" id="tab-db">
+      <button class="btn btn-primary btn-sm" id="btnRefreshDb" style="width:auto">🔄 Refresh</button>
+      <div id="dbContent"><div class="db-empty">No chunks yet. Ingest a file first.</div></div>
+    </div>
+  </aside>
+
+  <!-- ── RIGHT PANEL ── -->
+  <main class="right-panel">
+    <div class="right-header">
+      <h2 id="rightTitle">🏠 Welcome</h2>
+      <div class="spacer"></div>
+      <div class="step-nav" id="stepNav" style="display:none">
+        <button class="step-nav-btn" onclick="jumpToStage('qr')" title="Dense Retrieval">🔍 S1</button>
+        <button class="step-nav-btn" onclick="jumpToStage('rr')" title="Re-ranking">🎯 S2</button>
+        <button class="step-nav-btn" onclick="jumpToStage('llm')" title="Sent to LLM">⚡ S3</button>
+        <button class="step-nav-btn accent" onclick="jumpToStage('ans')" title="LLM Answer">🤖 S4</button>
+        <button class="step-nav-btn dim" id="btnCollapseAll" title="Collapse all stages">▲ All</button>
+        <button class="step-nav-btn dim" id="btnExpandAll" title="Expand all stages">▼ All</button>
+      </div>
+      <span id="rightStatus" style="font-size:12px;color:var(--text-muted)"></span>
+    </div>
+    <div class="right-content" id="rightContent">
+
+      <!-- Welcome screen -->
+      <div class="welcome" id="welcomeScreen">
+        <div class="big-icon">🔮</div>
+        <h2>Advanced RAG Explorer</h2>
+        <p>Upload a CSV or Excel file of test cases, watch how they get chunked and embedded into ChromaDB, then chat with your data using a full Advanced RAG pipeline.</p>
+        <div class="feature-grid">
+          <div class="feature-card"><div class="ficon">📦</div><h4>Smart Chunking</h4><p>Sliding-window row grouping with configurable size and overlap</p></div>
+          <div class="feature-card"><div class="ficon">🧠</div><h4>Nomic Embeddings</h4><p>768-dim local embeddings via sentence-transformers</p></div>
+          <div class="feature-card"><div class="ficon">🎯</div><h4>Cross-Encoder Re-ranking</h4><p>ms-marco MiniLM re-scores retrieved chunks for precision</p></div>
+          <div class="feature-card"><div class="ficon">⚡</div><h4>Groq LLM</h4><p>llama-3.1-8b-instant generation with hardened RAG system prompt</p></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
