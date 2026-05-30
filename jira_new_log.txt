@@ -1,0 +1,12 @@
+Making GET request to https://sdn7.atlassian.net/rest/api/3/project
+Success for https://sdn7.atlassian.net/rest/api/3/project
+Found 1 projects.
+ - Project: QA Testing (Key: SCRUM)
+Found matching project. Key is: SCRUM
+Making GET request to https://sdn7.atlassian.net/rest/api/3/project/SCRUM
+Success for https://sdn7.atlassian.net/rest/api/3/project/SCRUM
+Available issue types: ['Epic', 'Subtask', 'Task', 'Story', 'Feature', 'Request', 'Bug']
+Using Issue Type: Task (10003)
+Making POST request to https://sdn7.atlassian.net/rest/api/3/issue
+Success for https://sdn7.atlassian.net/rest/api/3/issue
+Successfully created issue: SCRUM-5 - This is a test ticket from AI agent

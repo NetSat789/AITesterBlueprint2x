@@ -18,7 +18,8 @@ echo.
 echo Press Ctrl+C to stop the server.
 echo ============================================
 
-start "" http://127.0.0.1:8000
+REM Wait for server to be ready before opening browser (3 second delay)
+start /b cmd /c "timeout /t 3 /nobreak >nul && start "" http://127.0.0.1:8000"
 
 python main.py
 

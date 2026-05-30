@@ -48,3 +48,6 @@ venv/
 # Temp
 *.tmp
 *.temp
+
+# Bundled Python installation
+mcp_for_test_cases/Python-3.11.15/

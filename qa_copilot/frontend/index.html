@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Co-Pilot Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h2>QA Co-Pilot</h2>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" data-view="chat">Chat & RAG</a>
+                <a href="#" class="nav-item" data-view="ingestion">Data Ingestion</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Chat View -->
+            <section id="chat-view" class="view-section active">
+                <header>
+                    <h1>Copilot Assistant</h1>
+                    <p>Ask questions about requirements, test cases, Jira, and code.</p>
+                </header>
+                
+                <div class="chat-container">
+                    <div class="messages" id="chat-messages">
+                        <div class="message ai-message">
+                            <div class="avatar">🤖</div>
+                            <div class="content">Hello! I'm your QA Co-Pilot. I can help you search through requirements, analyze test cases, or review source code. How can I assist you today?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-area">
+                        <input type="text" id="query-input" placeholder="e.g. Find test cases related to login authentication...">
+                        <button id="send-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ingestion View -->
+            <section id="ingestion-view" class="view-section hidden">
+                <header>
+                    <h1>Data Ingestion</h1>
+                    <p>Upload files to update the vector database context.</p>
+                </header>
+                
+                <div class="upload-container">
+                    <div class="upload-card">
+                        <h3>File Upload</h3>
+                        <p>Upload PDFs, CSVs (Tests/Jira), or Text files.</p>
+                        
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="file-input" class="file-input" accept=".pdf,.csv,.xlsx,.xls,.json,.txt">
+                            <select id="file-source-type" class="source-select">
+                                <option value="general">General/Requirement</option>
+                                <option value="test_case">Test Cases</option>
+                                <option value="jira">Jira Export</option>
+                            </select>
+                            <button id="upload-file-btn" class="primary-btn">Upload File</button>
+                        </div>
+                        <div id="file-upload-status"></div>
+                    </div>
+                    
+                    <div class="upload-card">
+                        <h3>Manual Text Ingestion</h3>
+                        <p>Quickly add context via text chunks.</p>
+                        <textarea id="ingest-text" placeholder="Enter text here..."></textarea>
+                        <button id="ingest-btn" class="primary-btn">Ingest Text</button>
+                        <div id="ingest-status"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sources Panel -->
+        <aside class="sources-panel" id="sources-panel">
+            <h3>Retrieved Context</h3>
+            <p class="subtitle">Sources used for the current answer.</p>
+            <div id="sources-list" class="sources-list">
+                <!-- Sources will be injected here -->
+                <div class="empty-state">No sources retrieved yet.</div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
