@@ -1,0 +1,4 @@
+Test Name,Model Under Test,Judge,Result,Duration (s)
+test_01_Basic_Anwser_Relevancy,hardcoded,deepeval_default,PASSED,3.92
+test_02_Groq_Llama4_vs_OPencartGPT41_Judge,groq/llama-3.3-70b-versatile,openrouter/gpt-4o-mini,PASSED,3.81
+test_03_OpenRouter_Llama4_vs_GPT41_Judge,openrouter/meta-llama-llama-3.3-70b-instruct,openrouter/gpt-4o-mini,PASSED,44.16
