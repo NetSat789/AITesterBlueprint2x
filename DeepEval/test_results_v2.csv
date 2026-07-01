@@ -1,4 +1,8 @@
 ﻿Test Name,Model Under Test,Judge,Result,Duration (s)
+<<<<<<< HEAD
 test_01_Basic_Anwser_Relevancy,hardcoded,deepeval_default,PASSED,3.90
+=======
+test_01_Basic_Anwser_Relevancy,hardcoded,deepeval_default,PASSED,3.9
+>>>>>>> e1c6aeb (Save local versions of Crew_AI_Agent and DeepEval)
 test_02_Groq_Llama4_vs_OPencartGPT41_Judge,groq/llama-3.3-70b-versatile,opencart/gpt-4o-mini,PASSED,4.61
 test_03_OpenRouter_Llama4_vs_GPT41_Judge,openrouter/gpt-4o-mini,groq/llama-3.3-70b-versatile,PASSED,14.03
