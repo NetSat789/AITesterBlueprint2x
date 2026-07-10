@@ -1,11 +1,13 @@
 package com.saucelabs.tests;
 
+import org.openqa.selenium.WebDriver;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+
 import com.saucelabs.config.ConfigReader;
 import com.saucelabs.driver.DriverFactory;
 import com.saucelabs.pages.LoginPage;
-import org.openqa.selenium.WebDriver;
-import org.testng.ITestResult;
-import org.testng.annotations.*;
 
 /**
  * BaseTest - TestNG base test class.
@@ -16,13 +18,14 @@ public class BaseTest {
 
     protected WebDriver driver;
 
-    @BeforeMethod
+    
+	@BeforeMethod
     public void setUp(java.lang.reflect.Method method) {
         String testName = method.getName();
         driver = DriverFactory.createDriver(testName);
     }
 
-    @AfterMethod
+	@AfterMethod
     public void tearDown(ITestResult result) {
         if (ConfigReader.isSauceEnabled()) {
             boolean passed = result.getStatus() == ITestResult.SUCCESS;

@@ -3,6 +3,7 @@ package com.saucelabs.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,32 +14,47 @@ import java.util.stream.Collectors;
  */
 public class CartPage extends BasePage {
 
-    // Locators
-    private static final By PAGE_TITLE              = By.className("title");
-    private static final By CART_ITEMS              = By.className("cart_item");
-    private static final By CART_ITEM_NAMES         = By.className("inventory_item_name");
-    private static final By CART_ITEM_PRICES        = By.className("inventory_item_price");
-    private static final By CART_ITEM_QUANTITIES    = By.className("cart_quantity");
-    private static final By REMOVE_BUTTONS          = By.cssSelector("button[id^='remove']");
-    private static final By CONTINUE_SHOPPING_BTN   = By.id("continue-shopping");
-    private static final By CHECKOUT_BTN            = By.id("checkout");
+    // Elements
+    @FindBy(className = "title")
+    private WebElement pageTitle;
+
+    @FindBy(className = "cart_item")
+    private List<WebElement> cartItems;
+
+    @FindBy(className = "inventory_item_name")
+    private List<WebElement> cartItemNames;
+
+    @FindBy(className = "inventory_item_price")
+    private List<WebElement> cartItemPrices;
+
+    @FindBy(className = "cart_quantity")
+    private List<WebElement> cartItemQuantities;
+
+    @FindBy(css = "button[id^='remove']")
+    private List<WebElement> removeButtons;
+
+    @FindBy(id = "continue-shopping")
+    private WebElement continueShoppingBtn;
+
+    @FindBy(id = "checkout")
+    private WebElement checkoutBtn;
 
     public CartPage(WebDriver driver) {
         super(driver);
     }
 
     public String getPageHeader() {
-        return getText(PAGE_TITLE);
+        return getText(pageTitle);
     }
 
     public List<String> getCartItemNames() {
-        return driver.findElements(CART_ITEM_NAMES).stream()
+        return cartItemNames.stream()
                 .map(WebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public int getCartItemCount() {
-        return driver.findElements(CART_ITEMS).size();
+        return cartItems.size();
     }
 
     public CartPage removeItemByName(String productName) {
@@ -48,15 +64,15 @@ public class CartPage extends BasePage {
     }
 
     public void clickContinueShopping() {
-        click(CONTINUE_SHOPPING_BTN);
+        click(continueShoppingBtn);
     }
 
     public void clickCheckout() {
-        click(CHECKOUT_BTN);
+        click(checkoutBtn);
     }
 
     public boolean isCartPageDisplayed() {
-        return isDisplayed(PAGE_TITLE) && "Your Cart".equals(getPageHeader());
+        return isDisplayed(pageTitle) && "Your Cart".equals(getPageHeader());
     }
 
     public boolean isCartEmpty() {
@@ -68,10 +84,10 @@ public class CartPage extends BasePage {
     }
 
     public boolean isCheckoutBtnDisplayed() {
-        return isDisplayed(CHECKOUT_BTN);
+        return isDisplayed(checkoutBtn);
     }
 
     public boolean isContinueShoppingBtnDisplayed() {
-        return isDisplayed(CONTINUE_SHOPPING_BTN);
+        return isDisplayed(continueShoppingBtn);
     }
 }

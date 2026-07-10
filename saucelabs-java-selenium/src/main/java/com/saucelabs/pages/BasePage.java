@@ -1,7 +1,13 @@
 package com.saucelabs.pages;
 
 import com.saucelabs.config.ConfigReader;
-import org.openqa.selenium.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -17,18 +23,30 @@ public class BasePage {
     protected WebDriver driver;
     protected WebDriverWait wait;
 
-    // Common locators
-    protected static final By BURGER_MENU_BTN    = By.id("react-burger-menu-btn");
-    protected static final By BURGER_CLOSE_BTN   = By.id("react-burger-cross-btn");
-    protected static final By LOGOUT_LINK        = By.id("logout_sidebar_link");
-    protected static final By ALL_ITEMS_LINK     = By.id("inventory_sidebar_link");
-    protected static final By SHOPPING_CART_LINK = By.className("shopping_cart_link");
-    protected static final By SHOPPING_CART_BADGE = By.className("shopping_cart_badge");
+    // Common elements (initialized via PageFactory)
+    @FindBy(id = "react-burger-menu-btn")
+    protected WebElement burgerMenuBtn;
+
+    @FindBy(id = "react-burger-cross-btn")
+    protected WebElement burgerCloseBtn;
+
+    @FindBy(id = "logout_sidebar_link")
+    protected WebElement logoutLink;
+
+    @FindBy(id = "inventory_sidebar_link")
+    protected WebElement allItemsLink;
+
+    @FindBy(className = "shopping_cart_link")
+    protected WebElement shoppingCartLink;
+
+    @FindBy(className = "shopping_cart_badge")
+    protected WebElement shoppingCartBadge;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait   = new WebDriverWait(driver,
                 Duration.ofSeconds(ConfigReader.getExplicitWait()));
+        PageFactory.initElements(driver, this);
     }
 
     public String getPageTitle() {
@@ -41,6 +59,10 @@ public class BasePage {
 
     public WebElement waitForVisible(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    public WebElement waitForVisible(WebElement element) {
+        return wait.until(ExpectedConditions.visibilityOf(element));
     }
 
     public WebElement waitForClickable(By locator) {
@@ -73,23 +95,46 @@ public class BasePage {
         }
     }
 
+    // Overloads to support PageFactory WebElement fields
+    public void click(WebElement element) {
+        wait.until(ExpectedConditions.elementToBeClickable(element)).click();
+    }
+
+    public void typeText(WebElement element, String text) {
+        wait.until(ExpectedConditions.visibilityOf(element));
+        element.clear();
+        element.sendKeys(text);
+    }
+
+    public String getText(WebElement element) {
+        return wait.until(ExpectedConditions.visibilityOf(element)).getText();
+    }
+
+    public boolean isDisplayed(WebElement element) {
+        try {
+            return element.isDisplayed();
+        } catch (NoSuchElementException | StaleElementReferenceException e) {
+            return false;
+        }
+    }
+
     public void openBurgerMenu() {
-        click(BURGER_MENU_BTN);
+        click(burgerMenuBtn);
     }
 
     public void logout() {
         openBurgerMenu();
-        click(LOGOUT_LINK);
+        click(logoutLink);
     }
 
     public void goToCart() {
-        click(SHOPPING_CART_LINK);
+        click(shoppingCartLink);
     }
 
     public int getCartItemCount() {
         try {
-            WebElement badge = driver.findElement(SHOPPING_CART_BADGE);
-            return Integer.parseInt(badge.getText().trim());
+            if (shoppingCartBadge == null) return 0;
+            return Integer.parseInt(shoppingCartBadge.getText().trim());
         } catch (Exception e) {
             return 0;
         }

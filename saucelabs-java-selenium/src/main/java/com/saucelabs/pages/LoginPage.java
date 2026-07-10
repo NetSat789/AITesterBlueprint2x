@@ -1,7 +1,8 @@
 package com.saucelabs.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * LoginPage - Page Object for the SauceDemo login page.
@@ -9,15 +10,30 @@ import org.openqa.selenium.WebDriver;
  */
 public class LoginPage extends BasePage {
 
-    // Locators
-    private static final By USERNAME_FIELD       = By.id("user-name");
-    private static final By PASSWORD_FIELD       = By.id("password");
-    private static final By LOGIN_BUTTON         = By.id("login-button");
-    private static final By ERROR_MESSAGE        = By.cssSelector("[data-test='error']");
-    private static final By ERROR_CLOSE_BTN      = By.className("error-button");
-    private static final By LOGIN_LOGO           = By.className("login_logo");
-    private static final By LOGIN_CREDENTIALS    = By.id("login_credentials");
-    private static final By LOGIN_PASSWORD_HINT  = By.className("login_password");
+    // Elements
+    @FindBy(id = "user-name")
+    private WebElement usernameField;
+
+    @FindBy(id = "password")
+    private WebElement passwordField;
+
+    @FindBy(id = "login-button")
+    private WebElement loginButton;
+
+    @FindBy(css = "[data-test='error']")
+    private WebElement errorMessage;
+
+    @FindBy(className = "error-button")
+    private WebElement errorCloseBtn;
+
+    @FindBy(className = "login_logo")
+    private WebElement loginLogo;
+
+    @FindBy(id = "login_credentials")
+    private WebElement loginCredentials;
+
+    @FindBy(className = "login_password")
+    private WebElement loginPasswordHint;
 
     public LoginPage(WebDriver driver) {
         super(driver);
@@ -29,17 +45,17 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage enterUsername(String username) {
-        typeText(USERNAME_FIELD, username);
+        typeText(usernameField, username);
         return this;
     }
 
     public LoginPage enterPassword(String password) {
-        typeText(PASSWORD_FIELD, password);
+        typeText(passwordField, password);
         return this;
     }
 
     public LoginPage clickLogin() {
-        click(LOGIN_BUTTON);
+        click(loginButton);
         return this;
     }
 
@@ -50,31 +66,31 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage closeError() {
-        click(ERROR_CLOSE_BTN);
+        click(errorCloseBtn);
         return this;
     }
 
     public boolean isLoginPageDisplayed() {
-        return isDisplayed(LOGIN_LOGO) && isDisplayed(LOGIN_BUTTON);
+        return isDisplayed(loginLogo) && isDisplayed(loginButton);
     }
 
     public String getErrorMessage() {
-        return getText(ERROR_MESSAGE);
+        return getText(errorMessage);
     }
 
     public boolean isErrorDisplayed() {
-        return isDisplayed(ERROR_MESSAGE);
+        return isDisplayed(errorMessage);
     }
 
     public String getLogoText() {
-        return getText(LOGIN_LOGO);
+        return getText(loginLogo);
     }
 
     public boolean areCredentialsDisplayed() {
-        return isDisplayed(LOGIN_CREDENTIALS);
+        return isDisplayed(loginCredentials);
     }
 
     public boolean isPasswordHintDisplayed() {
-        return isDisplayed(LOGIN_PASSWORD_HINT);
+        return isDisplayed(loginPasswordHint);
     }
 }

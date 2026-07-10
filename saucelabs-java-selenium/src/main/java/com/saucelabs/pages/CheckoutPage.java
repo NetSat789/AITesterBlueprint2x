@@ -1,7 +1,10 @@
 package com.saucelabs.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import java.util.List;
 
 /**
  * CheckoutPage - Page Object for the SauceDemo checkout pages.
@@ -10,46 +13,78 @@ import org.openqa.selenium.WebDriver;
 public class CheckoutPage extends BasePage {
 
     // Step One - Your Information
-    private static final By PAGE_TITLE          = By.className("title");
-    private static final By FIRST_NAME_FIELD    = By.id("first-name");
-    private static final By LAST_NAME_FIELD     = By.id("last-name");
-    private static final By POSTAL_CODE_FIELD   = By.id("postal-code");
-    private static final By CONTINUE_BTN        = By.id("continue");
-    private static final By CANCEL_BTN          = By.id("cancel");
-    private static final By ERROR_MESSAGE       = By.cssSelector("[data-test='error']");
+    @FindBy(className = "title")
+    private WebElement pageTitle;
+
+    @FindBy(id = "first-name")
+    private WebElement firstNameField;
+
+    @FindBy(id = "last-name")
+    private WebElement lastNameField;
+
+    @FindBy(id = "postal-code")
+    private WebElement postalCodeField;
+
+    @FindBy(id = "continue")
+    private WebElement continueBtn;
+
+    @FindBy(id = "cancel")
+    private WebElement cancelBtn;
+
+    @FindBy(css = "[data-test='error']")
+    private WebElement errorMessage;
 
     // Step Two - Overview
-    private static final By SUMMARY_INFO        = By.className("summary_info");
-    private static final By ITEM_TOTAL          = By.className("summary_subtotal_label");
-    private static final By TAX                 = By.className("summary_tax_label");
-    private static final By TOTAL              = By.className("summary_total_label");
-    private static final By FINISH_BTN          = By.id("finish");
-    private static final By CART_ITEMS          = By.className("cart_item");
+    @FindBy(className = "summary_info")
+    private WebElement summaryInfo;
+
+    @FindBy(className = "summary_subtotal_label")
+    private WebElement itemTotal;
+
+    @FindBy(className = "summary_tax_label")
+    private WebElement tax;
+
+    @FindBy(className = "summary_total_label")
+    private WebElement total;
+
+    @FindBy(id = "finish")
+    private WebElement finishBtn;
+
+    @FindBy(className = "cart_item")
+    private List<WebElement> cartItems;
 
     // Complete
-    private static final By COMPLETE_HEADER     = By.className("complete-header");
-    private static final By COMPLETE_TEXT       = By.className("complete-text");
-    private static final By BACK_HOME_BTN       = By.id("back-to-products");
-    private static final By PONY_EXPRESS_IMG    = By.className("pony_express");
+    @FindBy(className = "complete-header")
+    private WebElement completeHeader;
 
-    public CheckoutPage(WebDriver driver) {
+    @FindBy(className = "complete-text")
+    private WebElement completeText;
+
+    @FindBy(id = "back-to-products")
+    private WebElement backHomeBtn;
+
+    @FindBy(className = "pony_express")
+    private WebElement ponyExpressImg;
+
+    public CheckoutPage(WebDriver driver)
+     {
         super(driver);
     }
 
     // ====== Step One Actions ======
 
     public CheckoutPage enterFirstName(String name) {
-        typeText(FIRST_NAME_FIELD, name);
+        typeText(firstNameField, name);
         return this;
     }
 
     public CheckoutPage enterLastName(String name) {
-        typeText(LAST_NAME_FIELD, name);
+        typeText(lastNameField, name);
         return this;
     }
 
     public CheckoutPage enterPostalCode(String code) {
-        typeText(POSTAL_CODE_FIELD, code);
+        typeText(postalCodeField, code);
         return this;
     }
 
@@ -61,68 +96,68 @@ public class CheckoutPage extends BasePage {
     }
 
     public CheckoutPage clickContinue() {
-        click(CONTINUE_BTN);
+        click(continueBtn);
         return this;
     }
 
     public void clickCancel() {
-        click(CANCEL_BTN);
+        click(cancelBtn);
     }
 
     public String getErrorMessage() {
-        return getText(ERROR_MESSAGE);
+        return getText(errorMessage);
     }
 
     public boolean isErrorDisplayed() {
-        return isDisplayed(ERROR_MESSAGE);
+        return isDisplayed(errorMessage);
     }
 
     // ====== Step Two Actions ======
 
     public String getItemTotal() {
-        return getText(ITEM_TOTAL);
+        return getText(itemTotal);
     }
 
     public String getTax() {
-        return getText(TAX);
+        return getText(tax);
     }
 
     public String getTotal() {
-        return getText(TOTAL);
+        return getText(total);
     }
 
     public int getOverviewItemCount() {
-        return driver.findElements(CART_ITEMS).size();
+        return cartItems.size();
     }
 
     public CheckoutPage clickFinish() {
-        click(FINISH_BTN);
+        click(finishBtn);
         return this;
     }
 
     public boolean isSummaryDisplayed() {
-        return isDisplayed(SUMMARY_INFO);
+        return isDisplayed(summaryInfo);
     }
 
     // ====== Complete Actions ======
 
     public String getCompleteHeader() {
-        return getText(COMPLETE_HEADER);
+        return getText(completeHeader);
     }
 
     public String getCompleteText() {
-        return getText(COMPLETE_TEXT);
+        return getText(completeText);
     }
 
     public void clickBackHome() {
-        click(BACK_HOME_BTN);
+        click(backHomeBtn);
     }
 
     public boolean isOrderComplete() {
-        return isDisplayed(COMPLETE_HEADER);
+        return isDisplayed(completeHeader);
     }
 
     public String getPageHeader() {
-        return getText(PAGE_TITLE);
+        return getText(pageTitle);
     }
 }
