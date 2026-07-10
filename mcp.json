@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+        "vwo-100-test-cases": {
+            "command": "C:\\GrowWith\\mcp_for_test_cases\\venv311\\Scripts\\python.exe",
+            "args": [
+                "C:\\GrowWith\\mcp_for_test_cases\\vwo_test_cases_mcp.py"
+            ]
+        },
+        "vwo-login-test-cases": {
+            "command": "C:\\GrowWith\\mcp_for_test_cases\\venv311\\Scripts\\python.exe",
+            "args": [
+                "C:\\GrowWith\\mcp_for_test_cases\\test_case_server.py"
+            ]
+        }
+    }
+}

@@ -1,0 +1,303 @@
+﻿Bug Title: Bug: Login failure on VWO app (https://app.vwo.com/) û investigate error response and UI handling
+    Bug ID: KAN-12
+    Reporter: pqrs78901
+
+    No description provided.
+[QA Bug Triage Crew] Starting Analysis
+============================================================
++-------------------------[CrewAIEventsBus] Sync handler error in on_crew_started: 'charmap' codec can't 
+encode character '\U0001f680' in position 1: character maps to <undefined>
++-------------------------[CrewAIEventsBus] Sync handler error in on_task_started: 'charmap' codec can't 
+encode character '\U0001f680' in position 1: character maps to <undefined>
++-------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_started: 'charmap' codec 
+can't encode character '\U0001f680' in position 1: character maps to 
+<undefined>
+[35m[Finalize] todos_count=0, todos_with_results=0[0m
++-------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_execution: 'charmap' 
+codec can't encode character '\U0001f680' in position 1: character maps to 
+<undefined>
++----------------------------[CrewAIEventsBus] Sync handler error in on_task_completed: 'charmap' codec 
+can't encode character '\U0001f4cb' in position 1: character maps to 
+<undefined>
++-------------------------[CrewAIEventsBus] Sync handler error in on_task_started: 'charmap' codec can't 
+encode character '\U0001f680' in position 1: character maps to <undefined>
++----------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_started: 'charmap' codec 
+can't encode character '\U0001f4cb' in position 1: character maps to 
+<undefined>
+[35m[Finalize] todos_count=0, todos_with_results=0[0m
++-------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_execution: 'charmap' 
+codec can't encode character '\U0001f680' in position 1: character maps to 
+<undefined>
++----------------------------[CrewAIEventsBus] Sync handler error in on_task_completed: 'charmap' codec 
+can't encode character '\U0001f4cb' in position 1: character maps to 
+<undefined>
++-------------------------[CrewAIEventsBus] Sync handler error in on_task_started: 'charmap' codec can't 
+encode character '\U0001f680' in position 1: character maps to <undefined>
++----------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_started: 'charmap' codec 
+can't encode character '\U0001f4cb' in position 1: character maps to 
+<undefined>
+[35m[Finalize] todos_count=0, todos_with_results=0[0m
++-------------------------[CrewAIEventsBus] Sync handler error in on_agent_logs_execution: 'charmap' 
+codec can't encode character '\U0001f680' in position 1: character maps to 
+<undefined>
++----------------------------[CrewAIEventsBus] Sync handler error in on_task_completed: 'charmap' codec 
+can't encode character '\U0001f4cb' in position 1: character maps to 
+<undefined>
+
+============================================================
+[FINAL TRIAGE REPORT]
+============================================================
+**Test Recommendation Report for Bug KAN-12**
+
+### 1. Verification Test (Confirm the Fix Works)
+
+To verify that the fix for the login failure bug works, the following test case can be executed:
+
+```typescript
+// Verification test for login functionality
+test('Login functionality', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials
+  await page.fill('input[name="username"]', 'valid-username');
+  await page.fill('input[name="password"]', 'valid-password');
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Verify that the user is logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+
+  // Verify that the user is redirected to the dashboard page
+  await page.waitForURL('https://app.vwo.com/dashboard');
+});
+```
+
+### 2. Regression Test Cases
+
+The following regression test cases can be executed to prevent recurrence of the bug:
+
+1. **Test case: Invalid login credentials**
+```typescript
+test('Invalid login credentials', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter invalid login credentials
+  await page.fill('input[name="username"]', 'invalid-username');
+  await page.fill('input[name="password"]', 'invalid-password');
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Verify that an error message is displayed
+  await page.waitForSelector('div[class="error-message"]');
+});
+```
+
+2. **Test case: Empty login credentials**
+```typescript
+test('Empty login credentials', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Click the login button without entering any credentials
+  await page.click('button[type="submit"]');
+
+  // Verify that an error message is displayed
+  await page.waitForSelector('div[class="error-message"]');
+});
+```
+
+3. **Test case: Session expiration**
+```typescript
+test('Session expiration', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials
+  await page.fill('input[name="username"]', 'valid-username');
+  await page.fill('input[name="password"]', 'valid-password');
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Wait for a prolonged period to simulate session expiration
+  await page.waitForTimeout(3600000); // 1 hour
+
+  // Verify that the user is logged out
+  await page.waitForSelector('div[class="login-page"]');
+});
+```
+
+4. **Test case: Multiple login attempts**
+```typescript
+test('Multiple login attempts', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials
+  await page.fill('input[name="username"]', 'valid-username');
+  await page.fill('input[name="password"]', 'valid-password');
+
+  // Click the login button multiple times
+  for (let i = 0; i < 5; i++) {
+    await page.click('button[type="submit"]');
+  }
+
+  // Verify that the user is logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+5. **Test case: Login with different user accounts**
+```typescript
+test('Login with different user accounts', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials for different user accounts
+  const userAccounts = [
+    { username: 'user1', password: 'password1' },
+    { username: 'user2', password: 'password2' },
+    { username: 'user3', password: 'password3' },
+  ];
+
+  for (const userAccount of userAccounts) {
+    await page.fill('input[name="username"]', userAccount.username);
+    await page.fill('input[name="password"]', userAccount.password);
+
+    // Click the login button
+    await page.click('button[type="submit"]');
+
+    // Verify that the user is logged in successfully
+    await page.waitForSelector('div[class="user-profile"]');
+  }
+});
+```
+
+### 3. Edge Cases to Add to the Test Suite
+
+The following edge cases can be added to the test suite:
+
+1. **Test case: Login with special characters in username and password**
+```typescript
+test('Login with special characters', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials with special characters
+  await page.fill('input[name="username"]', 'user!@#$');
+  await page.fill('input[name="password"]', 'password!@#$');
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Verify that the user is logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+2. **Test case: Login with non-English characters in username and password**
+```typescript
+test('Login with non-English characters', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials with non-English characters
+  await page.fill('input[name="username"]', 'uΘΘrα');
+  await page.fill('input[name="password"]', '∙ΘΦα');
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Verify that the user is logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+3. **Test case: Login with very long username and password**
+```typescript
+test('Login with long credentials', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Enter valid login credentials with very long username and password
+  await page.fill('input[name="username"]', 'a'.repeat(1000));
+  await page.fill('input[name="password"]', 'b'.repeat(1000));
+
+  // Click the login button
+  await page.click('button[type="submit"]');
+
+  // Verify that the user is logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+### 4. Suggested Test Automation Approach
+
+The suggested test automation approach is to use Playwright with TypeScript to write end-to-end tests for the login functionality. Playwright provides a powerful and flexible way to automate browser interactions, and TypeScript provides a type-safe and maintainable way to write test code.
+
+The test automation approach should include the following steps:
+
+1. Set up a test environment with the necessary dependencies, including Playwright and TypeScript.
+2. Write test cases for the login functionality, including the verification test, regression test cases, and edge cases.
+3. Use Playwright to automate browser interactions and verify the expected behavior.
+4. Use TypeScript to write type-safe and maintainable test code.
+5. Run the tests using a test runner, such as Jest or Mocha.
+
+### 5. Load/Performance Tests
+
+The following load/performance tests can be executed to ensure that the login functionality can handle a large number of concurrent users:
+
+1. **Test case: Multiple users logging in simultaneously**
+```typescript
+test('Multiple users logging in', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Create multiple users and log them in simultaneously
+  const users = [
+    { username: 'user1', password: 'password1' },
+    { username: 'user2', password: 'password2' },
+    { username: 'user3', password: 'password3' },
+  ];
+
+  for (const user of users) {
+    await page.fill('input[name="username"]', user.username);
+    await page.fill('input[name="password"]', user.password);
+
+    // Click the login button
+    await page.click('button[type="submit"]');
+  }
+
+  // Verify that all users are logged in successfully
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+2. **Test case: High traffic load on the login page**
+```typescript
+test('High traffic load', async () => {
+  // Navigate to the login page
+  await page.goto('https://app.vwo.com/login');
+
+  // Simulate high traffic load on the login page
+  for (let i = 0; i < 100; i++) {
+    await page.fill('input[name="username"]', 'user1');
+    await page.fill('input[name="password"]', 'password1');
+
+    // Click the login button
+    await page.click('button[type="submit"]');
+  }
+
+  // Verify that the login page can handle the high traffic load
+  await page.waitForSelector('div[class="user-profile"]');
+});
+```
+
+Note: The load/performance tests should be executed in a controlled environment, such as a staging or testing environment, to ensure that they do not impact production traffic.
++-------------------------[CrewAIEventsBus] Sync handler error in on_crew_completed: 'charmap' codec 
+can't encode character '\U0001f680' in position 1: character maps to 
+<undefined>

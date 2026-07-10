@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "vwo-test-cases": {
+      "type": "local",
+      "command": [
+        "C:\\GrowWith\\mcp_for_test_cases\\venv311\\Scripts\\python.exe",
+        "test_case_server.py"
+      ],
+      "enabled": false,
+      "env": {}
+    },
+    "vwo-100-test-cases": {
+      "type": "local",
+      "command": [
+        "C:\\GrowWith\\mcp_for_test_cases\\venv311\\Scripts\\python.exe",
+        "C:\\GrowWith\\mcp_for_test_cases\\vwo_test_cases_mcp.py"
+      ],
+      "enabled": true,
+      "env": {}
+    }
+  }
+}

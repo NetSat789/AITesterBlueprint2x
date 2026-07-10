@@ -1,0 +1,11 @@
+com\automation\framework\utils\WaitUtils.class
+com\automation\framework\utils\ReportManager.class
+com\automation\framework\factory\BrowserFactory.class
+com\automation\framework\constants\FrameworkConstants.class
+com\automation\framework\utils\ConfigReader.class
+com\automation\framework\pages\DashboardPage.class
+com\automation\framework\utils\ScreenshotUtils.class
+com\automation\framework\base\BaseTest.class
+com\automation\framework\utils\JsonUtils.class
+com\automation\framework\base\DriverManager.class
+com\automation\framework\pages\LoginPage.class

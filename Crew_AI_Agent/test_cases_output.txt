@@ -1,0 +1,14 @@
+Here are 10 test cases for the app.vwo.com Login page with username, password, and submit button along with remember me functionality:
+
+1. **Valid Credentials Test**: Test the login functionality with valid username and password to ensure that the user is successfully logged in and redirected to the dashboard page.
+2. **Invalid Username Test**: Test the login functionality with an invalid username and valid password to ensure that an error message is displayed, and the user is not logged in.
+3. **Invalid Password Test**: Test the login functionality with a valid username and invalid password to ensure that an error message is displayed, and the user is not logged in.
+4. **Empty Username Field Test**: Test the login functionality with an empty username field and valid password to ensure that an error message is displayed, and the user is not logged in.
+5. **Empty Password Field Test**: Test the login functionality with a valid username and empty password field to ensure that an error message is displayed, and the user is not logged in.
+6. **Remember Me Functionality Test**: Test the remember me functionality by logging in with valid credentials and checking the remember me checkbox. Then, close the browser and reopen it to ensure that the user is still logged in.
+7. **Remember Me Functionality with Invalid Credentials Test**: Test the remember me functionality by logging in with invalid credentials and checking the remember me checkbox. Then, close the browser and reopen it to ensure that the user is not logged in.
+8. **Multiple Login Attempts with Invalid Credentials Test**: Test the login functionality by attempting to log in with invalid credentials multiple times to ensure that the system does not allow brute-force attacks and displays an error message after a certain number of attempts.
+9. **Username and Password Field Validation Test**: Test the username and password fields to ensure that they accept only valid characters and display an error message for invalid characters.
+10. **Login Button State Test**: Test the login button to ensure that it is enabled only when both the username and password fields are filled with valid data, and is disabled otherwise.
+
+These test cases cover various scenarios to ensure that the login page is functioning as expected, and the remember me functionality is working correctly.

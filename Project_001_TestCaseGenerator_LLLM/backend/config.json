@@ -1,0 +1,9 @@
+{
+  "ollamaUrl": "http://localhost:11434",
+  "ollamaModel": "qwen3-vl:4b",
+  "groqKey": "",
+  "openaiKey": "",
+  "geminiKey": "",
+  "claudeKey": "",
+  "provider": "groq"
+}

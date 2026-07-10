@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroma RAG Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="icon-pulse">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h2>NeuralRAG</h2>
+            </div>
+            
+            <div class="controls">
+                <div class="input-group">
+                    <label for="apiKey">Groq API Key</label>
+                    <input type="password" id="apiKey" placeholder="gsk_...">
+                </div>
+                
+                <div class="file-status">
+                    <h3>Available Documents</h3>
+                    <ul id="fileList">
+                        <li class="loading">Loading files...</li>
+                    </ul>
+                </div>
+                
+                <button id="ingestBtn" class="btn-primary">
+                    <i class="fa-solid fa-database"></i> Ingest to Chroma
+                </button>
+                <div id="ingestStatus" class="status-msg hidden"></div>
+            </div>
+            
+            <div class="db-viewer-trigger">
+                <button id="viewDbBtn" class="btn-secondary">
+                    <i class="fa-solid fa-list"></i> View Vector DB
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Top Section: PDF and Chunks View -->
+            <div class="top-panels">
+                <div class="panel pdf-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-file-pdf"></i> Source Document</h3>
+                    </div>
+                    <div class="panel-content" id="pdfContainer">
+                        <div class="empty-state">
+                            <i class="fa-regular fa-folder-open"></i>
+                            <p>No document selected. Please add a PDF to the data folder.</p>
+                        </div>
+                        <iframe id="pdfViewer" src="" class="hidden"></iframe>
+                    </div>
+                </div>
+                
+                <div class="panel chunks-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-cubes"></i> Vector DB Chunks</h3>
+                        <span class="badge" id="chunkCount">0 Chunks</span>
+                    </div>
+                    <div class="panel-content" id="chunksContainer">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-database"></i>
+                            <p>Database empty. Click "Ingest to Chroma" to process PDFs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section: Chat and Flow -->
+            <div class="bottom-panels">
+                <div class="panel chat-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-message"></i> Neural Assistant</h3>
+                    </div>
+                    <div class="chat-container">
+                        <div class="messages" id="chatMessages">
+                            <div class="message system-msg">
+                                <div class="msg-content">Hello! Ask me anything about your ingested documents.</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="queryInput" placeholder="Ask a question about the PDF...">
+                            <button id="sendQueryBtn" class="btn-icon">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel flow-panel">
+                    <div class="panel-header">
+                        <h3><i class="fa-solid fa-network-wired"></i> RAG Flow Visualizer</h3>
+                    </div>
+                    <div class="panel-content flow-content" id="flowContainer">
+                        <div class="flow-step hidden" id="step-query">
+                            <div class="node user-node">Query</div>
+                            <div class="arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                        </div>
+                        <div class="flow-step hidden" id="step-embed">
+                            <div class="node embed-node">Embedding (Nomic)</div>
+                            <div class="arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                        </div>
+                        <div class="flow-step hidden" id="step-retrieve">
+                            <div class="node db-node">ChromaDB Search</div>
+                            <div id="retrievedChunksBox" class="chunks-preview"></div>
+                            <div class="arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                        </div>
+                        <div class="flow-step hidden" id="step-llm">
+                            <div class="node llm-node">Groq LLM (Llama 3.1)</div>
+                            <div class="arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                        </div>
+                        <div class="flow-step hidden" id="step-answer">
+                            <div class="node answer-node">Answer Generated</div>
+                        </div>
+                        <div class="empty-state" id="flowEmpty">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <p>Ask a question to see the RAG flow dynamically.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for full DB View -->
+    <div id="dbModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>ChromaDB Contents</h2>
+            <div id="dbModalContent" class="db-grid"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

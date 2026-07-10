@@ -1,0 +1,6 @@
+TestData_ID,Category,Email,Password,ExpectedResult,Priority,Type
+TD-POS-001,Valid User,[VALID_EMAIL],[VALID_PASSWORD],Redirects to Dashboard,Critical,Positive
+TD-NEG-001,Invalid Password,[VALID_EMAIL],[INVALID_PASSWORD],Stays on login page + Shows Error,Critical,Negative
+TD-NEG-002,Unregistered Email,[UNREGISTERED_EMAIL],[VALID_PASSWORD],Stays on login page + Shows Error,Critical,Negative
+TD-NEG-003,Empty Fields,(empty),(empty),Stays on login page + Shows Error,Critical,Negative
+TD-NEG-004,Malformed Email,[MALFORMED_EMAIL],[VALID_PASSWORD],Stays on login page + Shows Error,High,Negative

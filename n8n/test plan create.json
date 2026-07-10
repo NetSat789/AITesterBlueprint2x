@@ -1,0 +1,213 @@
+{
+  "name": "test plan create",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "435197f1-b8be-423e-a1ec-b24716107bfa",
+      "name": "When chat message received",
+      "webhookId": "6bc06bc9-a203-48fd-b797-d47eda007e5c"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        224
+      ],
+      "id": "5b738193-4b58-428f-ae08-4377c0a03089",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "u5r3HsJG9KisKbDJ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Senior QA Engineer with 15+ years of hands-on experience in Functional, Integration, Regression, Edge Case, and System Testing across web, mobile, and API platforms.\n\nYour SOLE job is to generate atomic, traceable, Jira-importable test cases — strictly from documented sources. You do NOT invent, assume, or hallucinate requirements.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW (Execute steps in strict order)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 1 — SOURCE EXTRACTION (Mandatory)\n\nRead and extract ONLY documented facts from these authoritative sources:\n\n1. **PRD / Attached Document** — Retrieve via document tool or context.\n2. **Jira Ticket** — Retrieve using the provided Jira ID.\n\nExtract ONLY the following (if documented):\n- Feature description and scope\n- Acceptance criteria (AC)\n- Business rules and logic\n- Field-level validations and constraints\n- Technical dependencies and integrations\n- Explicitly stated edge cases\n- UI/UX specifications\n- Error messages and handling behavior\n\n### Hard Rules:\n- 🚫 Do NOT assume missing requirements.\n- 🚫 Do NOT create hypothetical user flows.\n- 🚫 Do NOT infer edge cases unless explicitly documented.\n- 🚫 Do NOT add test cases for features not mentioned in sources.\n\nIf required information is missing, output this BEFORE the table:\n> ⚠️ **Gap Identified:** Insufficient information in PRD/Jira to validate [specific scenario]. Recommend clarification from PO/BA.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 2 — TEST CASE DESIGN RULES\n\nDesign test cases strictly based on extracted content. Cover these categories ONLY if documented:\n\n| Category | Include When |\n|---|---|\n| Positive Scenarios | Happy path flows are described in AC |\n| Negative Scenarios | Error handling or invalid inputs are specified |\n| Boundary Value | Min/max limits, character lengths, or ranges are defined |\n| Field Validation | Required fields, formats, types are specified |\n| Error Handling | Error messages or failure behaviors are documented |\n| Integration | Cross-system or API dependencies are mentioned |\n| Security | Auth, access control, or data protection rules exist |\n| Performance | Load/response time criteria are stated |\n\n### Each Test Case MUST:\n- ✅ Be **atomic** — validate exactly ONE behavior\n- ✅ Be **traceable** — map to a specific Jira AC or business rule\n- ✅ Have **measurable expected results** — verifiable pass/fail criteria\n- ✅ Use **precise QA language** — no ambiguity, no \"should work fine\"\n- ✅ Include **concrete test data** — not placeholders like \"valid input\"\n- ✅ Specify **clear preconditions** — system state before execution\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 3 — OUTPUT FORMAT (Strict Jira Table)\n\nYou MUST return the final output as a **structured table** with these exact columns:\n\n| Column | Description |\n|---|---|\n| **Test Case ID** | Unique ID following pattern: `TC_<MODULE>_<NNN>` (e.g., TC_LOGIN_001) |\n| **Jira ID** | The linked Jira ticket ID (e.g., BW-123) |\n| **Module/Feature** | Feature or module under test |\n| **Test Case Title** | Concise, action-oriented title starting with \"Verify...\" |\n| **Preconditions** | System state required before test execution |\n| **Test Steps** | Numbered steps (1. 2. 3.) — sequential and reproducible |\n| **Test Data** | Specific, concrete test data values used in steps |\n| **Expected Result** | Observable, measurable outcome — not vague descriptions |\n| **Priority** | Critical / High / Medium / Low |\n| **Test Type** | Functional / Negative / Boundary / Integration / Security / Performance |\n\n### Formatting Rules:\n1. **One row = One atomic test case.** Never combine behaviors.\n2. **Test Steps** must be numbered (1. 2. 3.) within the cell.\n3. **Expected Result** must be specific and verifiable (e.g., \"Error message 'Invalid email format' is displayed below the email field\" — NOT \"Error is shown\").\n4. **Test Data** must contain actual values, not descriptions.\n5. **No free-text explanations** outside the table — only gap warnings before the table.\n6. **Priority assignment logic:**\n   - **Critical:** Blocks core functionality or causes data loss\n   - **High:** Major feature flow or AC item\n   - **Medium:** Secondary validations, formatting\n   - **Low:** UI polish, cosmetic checks\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## OUTPUT TEMPLATE\n\nIf gaps exist, state them first:\n\n> ⚠️ **Gap Identified:** [Description of missing info and recommendation]\n\nThen output the table:\n\n| Test Case ID | Jira ID | Module/Feature | Test Case Title | Preconditions | Test Steps | Test Data | Expected Result | Priority | Test Type |\n|---|---|---|---|---|---|---|---|---|---|\n| TC_LOGIN_001 | BW-123 | Login Module | Verify successful login with valid credentials | 1. User account exists and is active. 2. User is on the login page. | 1. Enter valid email in email field. 2. Enter valid password in password field. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: Test@1234 | User is redirected to the dashboard. Welcome message \"Hello, Test User\" is displayed in the header. | High | Functional |\n| TC_LOGIN_002 | BW-123 | Login Module | Verify error on login with invalid password | 1. User account exists. 2. User is on the login page. | 1. Enter valid email. 2. Enter incorrect password. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: WrongPass!99 | Error message \"Invalid email or password\" is displayed. Login button remains enabled. Password field is cleared. | High | Negative |\n| TC_LOGIN_003 | BW-123 | Login Module | Verify email field rejects input exceeding max character limit | 1. User is on the login page. | 1. Enter email with 256 characters in email field. 2. Observe field behavior. | Email: [256-char string]@bw.com | Input is truncated at 255 characters OR validation error \"Email must not exceed 255 characters\" is displayed. | Medium | Boundary |\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## GUARDRAILS (Non-Negotiable)\n\n1. **Zero Hallucination Policy:** Every test case must trace to a documented requirement. If you cannot cite the source, do not include it.\n2. **No Requirement Creation:** You are a QA engineer, not a BA/PO. Do not write requirements disguised as test cases.\n3. **Ambiguity Flagging:** If an AC is ambiguous, flag it as a gap and generate a test case with a conditional expected result noting the ambiguity.\n4. **Completeness Check:** After generating, verify every documented AC has at least one test case mapped to it. List any unmapped ACs as gaps.\n5. **No Duplicate Coverage:** Each behavior should be tested exactly once. Avoid overlapping test cases.\n\n---\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        32
+      ],
+      "id": "4dd27734-b278-48ca-aa13-e8ceaf136939",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        256
+      ],
+      "id": "1766d8a3-c636-4b2c-b872-e1ff7aacc349",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "10001",
+          "mode": "list",
+          "cachedResultName": "My Software Team"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10007",
+          "mode": "list",
+          "cachedResultName": "Task"
+        },
+        "summary": "{{ $fromAI('Summary', `Product Requirements Document: VWO Login Dashboard\nExecutive Summary\nThis Product Requirements Document (PRD) outlines the comprehensive requirements for the VWO (Visual Website Optimizer) login dashboard at VWO - Application . VWO is a leading digital experience optimization platform used by over 4,000 brands across 90 countries for A/B testing, conversion rate optimization, and user behavior analysis12. The login dashboard serves as the critical entry point for users accessing VWO's comprehensive suite of experimentation, personalization, and analytics tools23.\n\nProject Overview\nProduct Vision\nTo create a secure, intuitive, and efficient login experience that seamlessly connects users to VWO's powerful optimization platform while maintaining enterprise-grade security standards and exceptional user experience24.\n\nTarget Users\nPrimary Users: Digital marketers, product managers, UX designers, and developers at growing businesses\n\nSecondary Users: Enterprise teams, conversion rate optimization specialists, and data analysts\n\nUser Base: Professionals from companies ranging from 50-200 employees to large enterprises with 1000+ employees1\n\nBusiness Objectives\nEnsure secure access to VWO's experimentation platform\n\nMinimize login friction to improve user adoption and retention\n\nSupport enterprise security requirements and compliance standards\n\nFacilitate seamless onboarding for new users discovering VWO's capabilities24\n\nCurrent State Analysis\nBased on analysis of the existing VWO login interface, the current system includes:\n\nExisting Features\nClean Interface Design: Modern, minimalist login form with VWO branding5\n\nStandard Authentication Fields: Email address and password input fields5\n\nRemember Me Functionality: Checkbox option for persistent login sessions5\n\nAccount Registration Link: Direct path to free trial signup for new users5\n\nProduct Announcements: Banner highlighting new UI launch with Light and Dark Mode options5\n\nFunctional Requirements\nAuthentication System\nLogin Process\nPrimary Authentication: Email and password-based login with secure validation56\n\nSession Management: Secure session handling with configurable timeout periods6\n\nMulti-Factor Authentication: Optional 2FA support for enhanced security6\n\nSingle Sign-On (SSO): Enterprise SSO integration capabilities for organizational accounts6\n\nUser Input Validation\nReal-time Validation: Field validation on blur to provide immediate feedback7\n\nEmail Format Verification: Automatic email format validation with specialized mobile keyboards7\n\nPassword Strength Indicators: Visual feedback for password requirements and strength7\n\nError Handling: Clear, actionable error messages for failed authentication attempts7\n\nPassword Management\nForgot Password Flow: Streamlined password reset process with secure token generation8\n\nPassword Recovery: Multiple recovery options including email-based reset8\n\nPassword Requirements: Enforced security standards for password complexity6\n\nUser Experience Features\nInterface Design\nResponsive Design: Mobile-optimized interface with touch-friendly controls97\n\nAuto-focus: Automatic focus on the first input field to reduce user interactions7\n\nClickable Labels: Enhanced accessibility with clickable form labels7\n\nLoading States: Clear feedback during authentication processing9\n\nAccessibility Features\nScreen Reader Support: ARIA labels and keyboard navigation compatibility10\n\nHigh Contrast Mode: Accessibility options for visually impaired users10\n\nKeyboard Navigation: Full keyboard accessibility for all interactive elements10\n\nBranding and Visual Design\nBrand Consistency: Alignment with VWO's overall design system and color scheme911\n\nVisual Appeal: Professional, trustworthy appearance that builds user confidence911\n\nTheme Support: Light and Dark Mode options as highlighted in current announcements5\n\nTechnical Requirements\nSecurity Specifications\nData Protection\nEncryption: End-to-end encryption for all authentication data transmission6\n\nSecure Storage: Encrypted password storage using industry-standard hashing algorithms6\n\nSession Security: Secure session token generation and management6\n\nHTTPS Enforcement: SSL/TLS encryption for all login communications6\n\nCompliance Standards\nGDPR Compliance: European data protection regulation adherence for user data handling2\n\nEnterprise Security: Support for enterprise security policies and audit requirements4\n\nRate Limiting: Protection against brute force attacks through request throttling6\n\nPerformance Requirements\nLoad Time Optimization\nPage Load Speed: Login page loading within 2 seconds on standard connections12\n\nAsset Optimization: Compressed images and minified CSS/JavaScript files12\n\nCDN Integration: Content delivery network utilization for global performance2\n\nScalability\nHigh Availability: 99.9% uptime to support VWO's global user base4\n\nConcurrent Users: Support for thousands of simultaneous login attempts4\n\nGeographic Distribution: Multi-region deployment for optimal global performance2\n\nIntegration Requirements\nPlatform Integrations\nVWO Core Platform: Seamless transition to main dashboard after successful authentication2\n\nAnalytics Integration: Login success/failure tracking for platform optimization2\n\nCustomer Support: Integration with support systems for login assistance4\n\nThird-Party Services\nEnterprise SSO: Support for SAML, OAuth, and other enterprise authentication protocols6\n\nSocial Login: Optional integration with Google, Microsoft, and other identity providers6\n\nMarketing Tools: Integration with customer onboarding and analytics platforms2\n\nUser Journey and Flow\nNew User Experience\nDiscovery: User arrives at login page from VWO marketing materials or referrals\n\nRegistration Path: Clear call-to-action for free trial signup with minimal friction5\n\nOnboarding: Guided introduction to VWO's capabilities post-registration2\n\nReturning User Experience\nQuick Access: Streamlined login process with remembered credentials option5\n\nDashboard Transition: Immediate access to personalized VWO dashboard2\n\nRecent Activity: Context preservation from previous sessions2\n\nError Recovery Flow\nError Identification: Clear messaging for authentication failures8\n\nRecovery Options: Multiple paths for account recovery and support8\n\nSuccess Confirmation: Clear indication of successful login completion8\n\nSuccess Metrics and KPIs\nPerformance Metrics\nLogin Success Rate: Target 95%+ successful authentication attempts\n\nPage Load Time: Maintain sub-2-second login page loading\n\nUser Satisfaction: Achieve 90%+ user satisfaction scores for login experience\n\nSecurity Metrics\nSecurity Incidents: Zero successful brute force attacks or unauthorized access\n\nCompliance Adherence: 100% compliance with security audit requirements\n\nSession Security: No unauthorized session hijacking incidents\n\nBusiness Metrics\nUser Retention: Improved retention rates through enhanced login experience\n\nConversion Rate: Increased trial-to-paid conversion through streamlined onboarding\n\nSupport Volume: Reduced login-related support tickets by 20%\n\nImplementation Considerations\nDevelopment Phases\nPhase 1: Core Authentication\nSecure login form implementation\n\nBasic validation and error handling\n\nPassword reset functionality\n\nPhase 2: Enhanced UX\nMobile optimization and responsive design\n\nAccessibility features implementation\n\nAdvanced validation and feedback\n\nPhase 3: Enterprise Features\nSSO integration capabilities\n\nAdvanced security features\n\nAnalytics and monitoring implementation\n\nRisk Mitigation\nSecurity Risks\nMitigation: Regular security audits and penetration testing6\n\nMonitoring: Real-time security monitoring and alert systems6\n\nUpdates: Regular security patch deployment and vulnerability assessments6\n\nPerformance Risks\nLoad Testing: Comprehensive performance testing under various load conditions12\n\nMonitoring: Real-time performance monitoring and alerting12\n\nScaling: Auto-scaling infrastructure to handle traffic spikes2\n\nCompliance and Standards\nSecurity Standards\nIndustry Standards: Compliance with OWASP authentication guidelines6\n\nData Protection: GDPR and CCPA compliance for user data handling2\n\nEnterprise Requirements: Support for enterprise security policies and audit trails4\n\nAccessibility Standards\nWCAG Compliance: Web Content Accessibility Guidelines 2.1 AA compliance10\n\nUniversal Design: Inclusive design principles for all user abilities10\n\nTesting: Regular accessibility testing and user feedback incorporation10\n\nFuture Enhancements\nAdvanced Features\nBiometric Authentication: Support for fingerprint and facial recognition on compatible devices\n\nAdaptive Authentication: Risk-based authentication based on user behavior patterns\n\nProgressive Web App: Enhanced mobile experience with app-like functionality\n\nAnalytics and Optimization\nA/B Testing: Continuous optimization of login experience using VWO's own platform213\n\nUser Behavior Analysis: Detailed analytics on login patterns and user preferences2\n\nPersonalization: Customized login experience based on user history and preferences214\n\nThis comprehensive PRD serves as the foundation for developing a world-class login dashboard that supports VWO's mission of helping businesses optimize their digital experiences while maintaining the highest standards of security, usability, and performance24.`, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        432,
+        240
+      ],
+      "id": "38de64c9-a185-4534-a3d7-5b0aa5c9ddbc",
+      "name": "Read from jira",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "SgzDdn00IOeY9D4e",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1GsT57ocl4HaUCxNhBGVmwvLYh7R24gjVB_RDteltkF4",
+        "simple": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        288,
+        272
+      ],
+      "id": "19686705-dc1c-4801-811c-2837a421a17b",
+      "name": "Read PRD",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ml49SbBtA8FDfq0y",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        16,
+        224
+      ],
+      "id": "a121a675-5e4f-4620-a721-1d9b09016d54",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "imSIXipinYIlEZJH",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read from jira": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read PRD": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d2f870e2-984e-4450-8b90-521e6cc6bb1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d17c6f729710a68bba99a06755d2bd7d788d6e4acae5c4fca4847ede4d838ee1"
+  },
+  "id": "zaDULtQ66T2szzaY",
+  "tags": []
+}

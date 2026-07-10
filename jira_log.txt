@@ -1,0 +1,7 @@
+Using hardcoded project: KAN
+Making GET request to https://pqrs78901.atlassian.net/rest/api/3/project/KAN
+Error GET /rest/api/3/project/KAN: HTTP Error 404: Not Found
+{"errorMessages":["No project could be found with key 'KAN'."],"errors":{}}
+Could not fetch metadata for project KAN.
+Making GET request to https://pqrs78901.atlassian.net/rest/api/3/issue/createmeta?projectKeys=KAN
+Success for https://pqrs78901.atlassian.net/rest/api/3/issue/createmeta?projectKeys=KAN
