@@ -1,87 +1,72 @@
-package com.saucelabs.pages;
+﻿package com.saucelabs.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * ProductDetailPage - Page Object for individual product detail view.
  * URL: https://www.saucedemo.com/inventory-item.html?id=X
+ * Locators are defined as By constants; no @FindBy / PageFactory used.
  */
 public class ProductDetailPage extends BasePage {
 
-    // Elements
-    @FindBy(className = "inventory_details_name")
-    private WebElement productName;
-
-    @FindBy(className = "inventory_details_desc")
-    private WebElement productDesc;
-
-    @FindBy(className = "inventory_details_price")
-    private WebElement productPrice;
-
-    @FindBy(css = ".inventory_details_img_container img")
-    private WebElement productImage;
-
-    @FindBy(css = "button[id^='add-to-cart']")
-    private WebElement addToCartBtn;
-
-    @FindBy(css = "button[id^='remove']")
-    private WebElement removeBtn;
-
-    @FindBy(id = "back-to-products")
-    private WebElement backBtn;
-
-    @FindBy(className = "inventory_details_container")
-    private WebElement detailsContainer;
+    // Locators
+    private static final By PRODUCT_NAME       = By.className("inventory_details_name");
+    private static final By PRODUCT_DESC       = By.className("inventory_details_desc");
+    private static final By PRODUCT_PRICE      = By.className("inventory_details_price");
+    private static final By PRODUCT_IMAGE      = By.cssSelector(".inventory_details_img_container img");
+    private static final By ADD_TO_CART_BTN    = By.cssSelector("button[id^='add-to-cart']");
+    private static final By REMOVE_BTN         = By.cssSelector("button[id^='remove']");
+    private static final By BACK_BTN           = By.id("back-to-products");
+    private static final By DETAILS_CONTAINER  = By.className("inventory_details_container");
 
     public ProductDetailPage(WebDriver driver) {
         super(driver);
     }
 
     public String getProductName() {
-        return getText(productName);
+        return getText(PRODUCT_NAME);
     }
 
     public String getProductDescription() {
-        return getText(productDesc);
+        return getText(PRODUCT_DESC);
     }
 
     public String getProductPrice() {
-        return getText(productPrice);
+        return getText(PRODUCT_PRICE);
     }
 
     public ProductDetailPage addToCart() {
-        click(addToCartBtn);
+        click(ADD_TO_CART_BTN);
         return this;
     }
 
     public ProductDetailPage removeFromCart() {
-        click(removeBtn);
+        click(REMOVE_BTN);
         return this;
     }
 
     public void goBackToProducts() {
-        click(backBtn);
+        click(BACK_BTN);
     }
 
     public boolean isDetailPageDisplayed() {
-        return isDisplayed(detailsContainer);
+        return isDisplayed(DETAILS_CONTAINER);
     }
 
     public boolean isImageDisplayed() {
-        return isDisplayed(productImage);
+        return isDisplayed(PRODUCT_IMAGE);
     }
 
     public boolean isAddToCartDisplayed() {
-        return isDisplayed(addToCartBtn);
+        return isDisplayed(ADD_TO_CART_BTN);
     }
 
     public boolean isRemoveDisplayed() {
-        return isDisplayed(removeBtn);
+        return isDisplayed(REMOVE_BTN);
     }
 
     public String getImageSrc() {
-        return waitForVisible(productImage).getAttribute("src");
+        return waitForVisible(PRODUCT_IMAGE).getAttribute("src");
     }
 }

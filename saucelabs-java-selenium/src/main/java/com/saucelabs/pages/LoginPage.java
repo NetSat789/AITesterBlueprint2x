@@ -1,39 +1,24 @@
-package com.saucelabs.pages;
+﻿package com.saucelabs.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * LoginPage - Page Object for the SauceDemo login page.
  * URL: https://www.saucedemo.com/
+ * Locators are defined as By constants; no @FindBy / PageFactory used.
  */
 public class LoginPage extends BasePage {
 
-    // Elements
-    @FindBy(id = "user-name")
-    private WebElement usernameField;
-
-    @FindBy(id = "password")
-    private WebElement passwordField;
-
-    @FindBy(id = "login-button")
-    private WebElement loginButton;
-
-    @FindBy(css = "[data-test='error']")
-    private WebElement errorMessage;
-
-    @FindBy(className = "error-button")
-    private WebElement errorCloseBtn;
-
-    @FindBy(className = "login_logo")
-    private WebElement loginLogo;
-
-    @FindBy(id = "login_credentials")
-    private WebElement loginCredentials;
-
-    @FindBy(className = "login_password")
-    private WebElement loginPasswordHint;
+    // Locators
+    private static final By USERNAME_FIELD      = By.id("user-name");
+    private static final By PASSWORD_FIELD      = By.id("password");
+    private static final By LOGIN_BUTTON        = By.id("login-button");
+    private static final By ERROR_MESSAGE       = By.cssSelector("[data-test='error']");
+    private static final By ERROR_CLOSE_BTN     = By.className("error-button");
+    private static final By LOGIN_LOGO          = By.className("login_logo");
+    private static final By LOGIN_CREDENTIALS   = By.id("login_credentials");
+    private static final By LOGIN_PASSWORD_HINT = By.className("login_password");
 
     public LoginPage(WebDriver driver) {
         super(driver);
@@ -45,17 +30,17 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage enterUsername(String username) {
-        typeText(usernameField, username);
+        typeText(USERNAME_FIELD, username);
         return this;
     }
 
     public LoginPage enterPassword(String password) {
-        typeText(passwordField, password);
+        typeText(PASSWORD_FIELD, password);
         return this;
     }
 
     public LoginPage clickLogin() {
-        click(loginButton);
+        click(LOGIN_BUTTON);
         return this;
     }
 
@@ -66,31 +51,31 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage closeError() {
-        click(errorCloseBtn);
+        click(ERROR_CLOSE_BTN);
         return this;
     }
 
     public boolean isLoginPageDisplayed() {
-        return isDisplayed(loginLogo) && isDisplayed(loginButton);
+        return isDisplayed(LOGIN_LOGO) && isDisplayed(LOGIN_BUTTON);
     }
 
     public String getErrorMessage() {
-        return getText(errorMessage);
+        return getText(ERROR_MESSAGE);
     }
 
     public boolean isErrorDisplayed() {
-        return isDisplayed(errorMessage);
+        return isDisplayed(ERROR_MESSAGE);
     }
 
     public String getLogoText() {
-        return getText(loginLogo);
+        return getText(LOGIN_LOGO);
     }
 
     public boolean areCredentialsDisplayed() {
-        return isDisplayed(loginCredentials);
+        return isDisplayed(LOGIN_CREDENTIALS);
     }
 
     public boolean isPasswordHintDisplayed() {
-        return isDisplayed(loginPasswordHint);
+        return isDisplayed(LOGIN_PASSWORD_HINT);
     }
 }

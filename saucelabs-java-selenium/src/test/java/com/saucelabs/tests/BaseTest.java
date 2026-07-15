@@ -1,4 +1,4 @@
-package com.saucelabs.tests;
+﻿package com.saucelabs.tests;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
@@ -18,7 +18,6 @@ public class BaseTest {
 
     protected WebDriver driver;
 
-    
 	@BeforeMethod
     public void setUp(java.lang.reflect.Method method) {
         String testName = method.getName();

@@ -1,9 +1,8 @@
-package com.saucelabs.pages;
+﻿package com.saucelabs.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
@@ -12,69 +11,59 @@ import java.util.stream.Collectors;
 /**
  * ProductsPage - Page Object for the SauceDemo inventory/products page.
  * URL: https://www.saucedemo.com/inventory.html
+ * Locators are defined as By constants; no @FindBy / PageFactory used.
  */
 public class ProductsPage extends BasePage {
 
-    // Elements
-    @FindBy(className = "title")
-    private WebElement pageTitle;
-
-    @FindBy(className = "inventory_item")
-    private List<WebElement> productItems;
-
-    @FindBy(className = "inventory_item_name")
-    private List<WebElement> productNames;
-
-    @FindBy(className = "inventory_item_price")
-    private List<WebElement> productPrices;
-
-    @FindBy(css = ".inventory_item_img img")
-    private List<WebElement> productImages;
-
-    @FindBy(className = "product_sort_container")
-    private WebElement sortDropdown;
+    // Locators
+    private static final By PAGE_TITLE      = By.className("title");
+    private static final By PRODUCT_ITEMS   = By.className("inventory_item");
+    private static final By PRODUCT_NAMES   = By.className("inventory_item_name");
+    private static final By PRODUCT_PRICES  = By.className("inventory_item_price");
+    private static final By PRODUCT_IMAGES  = By.cssSelector(".inventory_item_img img");
+    private static final By SORT_DROPDOWN   = By.className("product_sort_container");
 
     public ProductsPage(WebDriver driver) {
         super(driver);
     }
 
     public String getPageHeader() {
-        return getText(pageTitle);
+        return getText(PAGE_TITLE);
     }
 
     public List<String> getAllProductNames() {
-        return productNames.stream()
+        return driver.findElements(PRODUCT_NAMES).stream()
                 .map(WebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public List<String> getAllProductPrices() {
-        return productPrices.stream()
+        return driver.findElements(PRODUCT_PRICES).stream()
                 .map(WebElement::getText)
                 .collect(Collectors.toList());
     }
 
     public int getProductCount() {
-        return productItems.size();
+        return driver.findElements(PRODUCT_ITEMS).size();
     }
 
     public ProductsPage sortByNameAZ() {
-        new Select(sortDropdown).selectByValue("az");
+        new Select(driver.findElement(SORT_DROPDOWN)).selectByValue("az");
         return this;
     }
 
     public ProductsPage sortByNameZA() {
-        new Select(sortDropdown).selectByValue("za");
+        new Select(driver.findElement(SORT_DROPDOWN)).selectByValue("za");
         return this;
     }
 
     public ProductsPage sortByPriceLowHigh() {
-        new Select(sortDropdown).selectByValue("lohi");
+        new Select(driver.findElement(SORT_DROPDOWN)).selectByValue("lohi");
         return this;
     }
 
     public ProductsPage sortByPriceHighLow() {
-        new Select(sortDropdown).selectByValue("hilo");
+        new Select(driver.findElement(SORT_DROPDOWN)).selectByValue("hilo");
         return this;
     }
 
@@ -102,7 +91,7 @@ public class ProductsPage extends BasePage {
     }
 
     public boolean isProductsPageDisplayed() {
-        return isDisplayed(pageTitle) && "Products".equals(getPageHeader());
+        return isDisplayed(PAGE_TITLE) && "Products".equals(getPageHeader());
     }
 
     public boolean areProductsListed() {
@@ -110,15 +99,15 @@ public class ProductsPage extends BasePage {
     }
 
     public boolean areAllImagesDisplayed() {
-        // Wait for first image to be visible, then check all
-        if (productImages.isEmpty()) {
+        List<WebElement> images = driver.findElements(PRODUCT_IMAGES);
+        if (images.isEmpty()) {
             return false;
         }
-        waitForVisible(productImages.get(0));
-        return productImages.stream().allMatch(WebElement::isDisplayed);
+        waitForVisible(images.get(0));
+        return images.stream().allMatch(WebElement::isDisplayed);
     }
 
     public boolean isSortDropdownDisplayed() {
-        return isDisplayed(sortDropdown);
+        return isDisplayed(SORT_DROPDOWN);
     }
 }
